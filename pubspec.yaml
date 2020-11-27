@@ -1,8 +1,7 @@
 name: list_data_cache_manager
 description: A new Flutter package project.
 version: 0.0.1
-author:
-homepage:
+homepage: https://github.com/LBXjixiangniao/list_data_cache_manager
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
@@ -13,8 +12,8 @@ dependencies:
     sdk: flutter
   moor: ^3.4.0
   sqlite3_flutter_libs: ^0.2.0
-  path_provider: 1.6.24
-  path: 1.7.0
+  path_provider: ^1.6.24
+  path: ^1.7.0
 
 dev_dependencies:
   # flutter_test:

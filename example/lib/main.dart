@@ -5,7 +5,6 @@ import 'package:list_data_cache_manager/default_list_cache_manager.dart';
 import 'package:list_data_cache_manager/list_data_cache_manager.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
-import 'common_list.dart';
 import 'model/list_model.dart';
 
 void main() {
@@ -13,46 +12,17 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  int index = 0;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        title: 'Flutter Demo',
-        showPerformanceOverlay: true,
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        home: StatefulBuilder(
-          builder: (_, refresh) {
-            return Column(
-              children: [
-                Expanded(
-                  child: IndexedStack(
-                    index: index,
-                    children: [
-                      ListDataPage(),
-                      CommonListDataPage(),
-                    ],
-                  ),
-                ),
-                BottomNavigationBar(
-                  currentIndex: index,
-                  items: [
-                    BottomNavigationBarItem(label: '缓存', icon: Icon(Icons.ad_units)),
-                    BottomNavigationBarItem(label: '普通', icon: Icon(Icons.ad_units)),
-                  ],
-                  onTap: (i) {
-                    refresh(() {
-                      index = i;
-                    });
-                  },
-                ),
-              ],
-            );
-          },
-        ));
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: ListDataPage(),
+    );
   }
 }
 
@@ -85,40 +55,40 @@ class _ListDataPageState extends State<ListDataPage> {
   }
 
   void getData(int startIndex) {
-    // Future.delayed(Duration(seconds: 1), () {
-      if (_refreshController.isRefresh) {
-        _refreshController.refreshCompleted();
-      }
-      if (_refreshController.isLoading) {
-        _refreshController.loadComplete();
-      }
+    Future.delayed(Duration(seconds: 1), () {
+    if (_refreshController.isRefresh) {
+      _refreshController.refreshCompleted();
+    }
+    if (_refreshController.isLoading) {
+      _refreshController.loadComplete();
+    }
 
-      ///判断是否下拉刷新
-      if (startIndex == 0) {
-        _dataCacheManager.clear();
+    ///判断是否下拉刷新
+    if (startIndex == 0) {
+      _dataCacheManager.clear();
 
-        ///清除nodata，以便可以继续上拉加载更多
-        _refreshController.loadComplete();
-      }
+      ///清除nodata，以便可以继续上拉加载更多
+      _refreshController.loadComplete();
+    }
 
-      // ///判断是否无更多数据
-      // if (startIndex > 90) {
-      //   _refreshController.loadNoData();
+    // ///判断是否无更多数据
+    // if (startIndex > 90) {
+    //   _refreshController.loadNoData();
 
-      //   ///禁止_dataCacheManager发起的网络请求
-      //   _dataCacheManager.unableNetworkLoading();
-      // } else {
-      ///请求数据结束后允许_dataCacheManager发起网络请求,也就是允许再次调用requestNetworkData
-      _dataCacheManager.enableNetworkLoading();
-      // }
+    //   ///禁止_dataCacheManager发起的网络请求
+    //   _dataCacheManager.unableNetworkLoading();
+    // } else {
+    ///请求数据结束后允许_dataCacheManager发起网络请求,也就是允许再次调用requestNetworkData
+    _dataCacheManager.enableNetworkLoading();
+    // }
 
-      List<ListItemInfoModel> result = [];
-      List.generate(PageCount, (index) => result.add(ListItemInfoModel(value: index + startIndex)));
-      if (_dataCacheManager.itemCount == startIndex) {
-        _dataCacheManager.addAll(result);
-        setState(() {});
-      }
-    // });
+    List<ListItemInfoModel> result = [];
+    List.generate(PageCount, (index) => result.add(ListItemInfoModel(value: index + startIndex)));
+    if (_dataCacheManager.itemCount == startIndex) {
+      _dataCacheManager.addAll(result);
+      setState(() {});
+    }
+    });
   }
 
   @override
@@ -142,7 +112,8 @@ class _ListDataPageState extends State<ListDataPage> {
             alignment: Alignment.center,
             child: StreamBuilder(
               stream: _streamController.stream,
-              builder: (_, __) => Text('缓存数据${_dataCacheManager.firstCacheItem?.index}->${_dataCacheManager.lastCacheItem?.index}'),
+              builder: (_, __) =>
+                  Text('缓存数据${_dataCacheManager.firstCacheItem?.index}->${_dataCacheManager.lastCacheItem?.index}'),
             ),
           ),
           Expanded(
@@ -195,5 +166,3 @@ class _ListDataPageState extends State<ListDataPage> {
     );
   }
 }
-
-

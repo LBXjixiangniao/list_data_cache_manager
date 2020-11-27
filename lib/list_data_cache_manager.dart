@@ -111,13 +111,21 @@ class ListCacheItem<T> extends LinkedListEntry<ListCacheItem> {
   ValueChanged<T> _onDataSetCall;
 }
 
+/**
+ * suggestCacheNum：设置缓存数量，实际缓存数量不一定是该数值。ListDataCacheManager实际缓存的数据为suggestCacheNum + dbLoadExtent + ExtraExtent
+ * dbLoadExtent：离链表_cacheList尽头还有多少条数据的时候开始加载数据库获取数据
+ * networkLoadExtent：离最后一条数据还有多少条数据的时候开始进行网络请求获取更多数据。如当前总共有100条数据，如果设置networkLoadExtent为10的时候，那当第90条数据被用于构建UI的时候会调用requestNetworkData进行网络数据加载
+ * dbLoadPageCount： 每次从数据库加载的数据数量
+ * loadDBCacheData：加载数据库数据回调
+ * requestNetworkData：网络请求回调
+ */
 class ListDataCacheManager<T> {
   ListDataCacheManager({
     this.suggestCacheNum = 100,
     this.dbLoadExtent = 20,
     this.networkLoadExtent = 25,
     this.dbLoadPageCount = 50,
-    this.loadCacheData,
+    this.loadDBCacheData,
     this.requestNetworkData,
   })  : assert(dbLoadExtent > 0 && networkLoadExtent > 0 && dbLoadPageCount > 0),
         assert(suggestCacheNum > dbLoadExtent);
@@ -135,7 +143,7 @@ class ListDataCacheManager<T> {
   ///数据库查找数据，每次查询多少条出来
   final int dbLoadPageCount;
 
-  Future<List<T>> Function(int startIndex, int endIndex) loadCacheData;
+  Future<List<T>> Function(int startIndex, int endIndex) loadDBCacheData;
   void Function(int startIndex) requestNetworkData;
 
   ///内存中存储的数据
@@ -303,8 +311,8 @@ class ListDataCacheManager<T> {
   ///startItem是index小的，endItem是index大的
   void _loadDbData({@required ListCacheItem<T> startItem, @required ListCacheItem<T> endItem, @required ItemIndexDirection direction}) {
     assert(startItem != null && endItem != null);
-    if (loadCacheData != null) {
-      loadCacheData(startItem.index, endItem.index).then((tmpList) {
+    if (loadDBCacheData != null) {
+      loadDBCacheData(startItem.index, endItem.index).then((tmpList) {
         bool isReversed = false;
         ListCacheItem<T> item;
         Iterable<T> iterable;
