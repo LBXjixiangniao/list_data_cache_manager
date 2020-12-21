@@ -4,7 +4,7 @@ dart pub: https://pub.dev/packages/list_data_cache_manager
 * 列表数据预加载
 
 ## 主要原理
-![原理图](./read_me_image/listDataCache.png)
+![原理图](./read_me_image/list_data_cache.png)
 
 
 
